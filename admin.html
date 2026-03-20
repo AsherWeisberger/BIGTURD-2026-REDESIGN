@@ -166,7 +166,7 @@
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
-    import { getFirestore, collection, doc, setDoc, getDocs, addDoc, query, orderBy } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+    import { getFirestore, collection, doc, setDoc, getDocs, getDoc, addDoc, query, orderBy } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
     // Firebase config
     const firebaseConfig = {
@@ -253,7 +253,7 @@
                 </div>
               </div>
               <div class="flex flex-col gap-2">
-                <button onclick="openEditModal('${client.id}', ${JSON.stringify(client).replace(/'/g, "\\'")})" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm">
+                <button onclick="openEditModal('${client.id}')" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm">
                   Edit
                 </button>
                 <button onclick="openModal('${client.id}', '${client.name.replace(/'/g, "\\'")}')" class="bg-lime-600 text-white px-4 py-2 rounded-lg hover:bg-lime-700 text-sm">
@@ -341,15 +341,23 @@
     });
 
     // Edit client functions
-    window.openEditModal = (clientId, client) => {
-      document.getElementById('editClientId').value = clientId;
-      document.getElementById('editName').value = client.name || '';
-      document.getElementById('editPhone').value = client.phone || '';
-      document.getElementById('editEmail').value = client.email || '';
-      document.getElementById('editAddress').value = client.address || '';
-      document.getElementById('editService').value = client.service || 'weekly-small';
-      document.getElementById('editModal').classList.remove('hidden');
-      document.getElementById('editModal').classList.add('flex');
+    window.openEditModal = async (clientId) => {
+      try {
+        const clientDoc = await getDoc(doc(db, 'clients', clientId));
+        const client = clientDoc.data();
+        
+        document.getElementById('editClientId').value = clientId;
+        document.getElementById('editName').value = client.name || '';
+        document.getElementById('editPhone').value = client.phone || '';
+        document.getElementById('editEmail').value = client.email || '';
+        document.getElementById('editAddress').value = client.address || '';
+        document.getElementById('editService').value = client.service || 'weekly-small';
+        
+        document.getElementById('editModal').classList.remove('hidden');
+        document.getElementById('editModal').classList.add('flex');
+      } catch (err) {
+        alert('Error loading client: ' + err.message);
+      }
     };
 
     window.closeEditModal = () => {
