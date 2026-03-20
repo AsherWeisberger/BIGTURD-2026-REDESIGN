@@ -55,21 +55,43 @@
       
       <form id="signupForm" class="space-y-4">
         <div>
-          <label class="block text-sm font-medium text-stone-700 mb-1">Full Name</label>
+          <label class="block text-sm font-medium text-stone-700 mb-1">Full Name *</label>
           <input type="text" id="signupName" required class="w-full px-4 py-3 rounded-xl border-2 border-stone-200 focus:border-lime-500 focus:outline-none">
         </div>
         <div>
-          <label class="block text-sm font-medium text-stone-700 mb-1">Email</label>
+          <label class="block text-sm font-medium text-stone-700 mb-1">Phone Number *</label>
+          <input type="tel" id="signupPhone" required class="w-full px-4 py-3 rounded-xl border-2 border-stone-200 focus:border-lime-500 focus:outline-none" placeholder="(812) 555-0123">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-stone-700 mb-1">Email *</label>
           <input type="email" id="signupEmail" required class="w-full px-4 py-3 rounded-xl border-2 border-stone-200 focus:border-lime-500 focus:outline-none">
         </div>
         <div>
-          <label class="block text-sm font-medium text-stone-700 mb-1">Password</label>
+          <label class="block text-sm font-medium text-stone-700 mb-1">Password *</label>
           <input type="password" id="signupPassword" required minlength="6" class="w-full px-4 py-3 rounded-xl border-2 border-stone-200 focus:border-lime-500 focus:outline-none">
           <p class="text-xs text-stone-400 mt-1">At least 6 characters</p>
         </div>
         <div>
-          <label class="block text-sm font-medium text-stone-700 mb-1">Service Address</label>
+          <label class="block text-sm font-medium text-stone-700 mb-1">Service Address *</label>
           <input type="text" id="signupAddress" required class="w-full px-4 py-3 rounded-xl border-2 border-stone-200 focus:border-lime-500 focus:outline-none" placeholder="123 Main St, Terre Haute, IN">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-stone-700 mb-1">Service Plan</label>
+          <select id="signupService" class="w-full px-4 py-3 rounded-xl border-2 border-stone-200 focus:border-lime-500 focus:outline-none">
+            <option value="weekly-small">Weekly - Small Yard ($65/visit)</option>
+            <option value="weekly-medium">Weekly - Medium Yard ($75/visit)</option>
+            <option value="weekly-large">Weekly - Large Yard ($85/visit)</option>
+            <option value="weekly-xlarge">Weekly - X-Large Yard ($100/visit)</option>
+            <option value="twice-small">Twice Weekly - Small Yard ($110/visit)</option>
+            <option value="twice-medium">Twice Weekly - Medium Yard ($120/visit)</option>
+            <option value="twice-large">Twice Weekly - Large Yard ($135/visit)</option>
+            <option value="twice-xlarge">Twice Weekly - X-Large Yard ($145/visit)</option>
+            <option value="biweekly-small">Bi-Weekly - Small Yard ($45/visit)</option>
+            <option value="biweekly-medium">Bi-Weekly - Medium Yard ($50/visit)</option>
+            <option value="biweekly-large">Bi-Weekly - Large Yard ($60/visit)</option>
+            <option value="biweekly-xlarge">Bi-Weekly - X-Large Yard ($70/visit)</option>
+            <option value="onetime">One-Time Cleanup ($69-110)</option>
+          </select>
         </div>
         <button type="submit" class="w-full bg-lime-600 text-white font-bold py-3 rounded-xl hover:bg-lime-700 transition">
           Create Account
@@ -101,6 +123,13 @@
         </div>
       </div>
       
+      <!-- Current Service -->
+      <div class="bg-white rounded-xl p-6 shadow mb-6">
+        <h2 class="font-bold text-lg mb-4">📋 Your Service Plan</h2>
+        <div id="currentService" class="text-lime-600 font-semibold text-lg">--</div>
+        <p class="text-stone-500 text-sm mt-1">Contact us to change your plan</p>
+      </div>
+      
       <!-- Quick Stats -->
       <div class="grid grid-cols-2 gap-4 mb-6">
         <div class="bg-white rounded-xl p-4 shadow">
@@ -126,6 +155,14 @@
         <h2 class="font-bold text-lg mb-4">Account Info</h2>
         <div class="space-y-2 text-sm">
           <div class="flex justify-between">
+            <span class="text-stone-500">Name:</span>
+            <span id="userNameDisplay" class="font-medium"></span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-stone-500">Phone:</span>
+            <span id="userPhone" class="font-medium"></span>
+          </div>
+          <div class="flex justify-between">
             <span class="text-stone-500">Email:</span>
             <span id="userEmail" class="font-medium"></span>
           </div>
@@ -144,7 +181,6 @@
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
     import { getFirestore, doc, setDoc, getDoc, collection, query, where, orderBy, limit, getDocs, addDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
-    // Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyBaSETzAzXCDC_RHntmNKeM9nO4pcA6VRA",
       authDomain: "unaligned-fc556.firebaseapp.com",
@@ -154,13 +190,26 @@
       appId: "1:720311168962:web:18d9f60626671a6e13f05b"
     };
 
-    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // Make functions available globally
-    window.firebaseAuth = { auth, db };
+    const SERVICE_LABELS = {
+      'weekly-small': 'Weekly - Small Yard ($65)',
+      'weekly-medium': 'Weekly - Medium Yard ($75)',
+      'weekly-large': 'Weekly - Large Yard ($85)',
+      'weekly-xlarge': 'Weekly - X-Large Yard ($100)',
+      'twice-small': 'Twice Weekly - Small Yard ($110)',
+      'twice-medium': 'Twice Weekly - Medium Yard ($120)',
+      'twice-large': 'Twice Weekly - Large Yard ($135)',
+      'twice-xlarge': 'Twice Weekly - X-Large Yard ($145)',
+      'biweekly-small': 'Bi-Weekly - Small Yard ($45)',
+      'biweekly-medium': 'Bi-Weekly - Medium Yard ($50)',
+      'biweekly-large': 'Bi-Weekly - Large Yard ($60)',
+      'biweekly-xlarge': 'Bi-Weekly - X-Large Yard ($70)',
+      'onetime': 'One-Time Cleanup'
+    };
+
     window.showSignup = () => {
       document.getElementById('loginView').classList.add('hidden');
       document.getElementById('signupView').classList.remove('hidden');
@@ -170,7 +219,6 @@
       document.getElementById('loginView').classList.remove('hidden');
     };
 
-    // Login
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const email = document.getElementById('loginEmail').value;
@@ -184,22 +232,24 @@
       }
     });
 
-    // Signup
     document.getElementById('signupForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const name = document.getElementById('signupName').value;
+      const phone = document.getElementById('signupPhone').value;
       const email = document.getElementById('signupEmail').value;
       const password = document.getElementById('signupPassword').value;
       const address = document.getElementById('signupAddress').value;
+      const service = document.getElementById('signupService').value;
       
       try {
         const userCred = await createUserWithEmailAndPassword(auth, email, password);
         
-        // Create user profile in Firestore
         await setDoc(doc(db, 'clients', userCred.user.uid), {
           name,
+          phone,
           email,
           address,
+          service,
           createdAt: new Date().toISOString(),
           starLevel: 1
         });
@@ -210,7 +260,6 @@
       }
     });
 
-    // Load Dashboard
     async function loadDashboard(uid) {
       document.getElementById('loginView').classList.add('hidden');
       document.getElementById('signupView').classList.add('hidden');
@@ -220,17 +269,18 @@
       const userData = userDoc.data();
       
       document.getElementById('userName').textContent = userData.name;
+      document.getElementById('userNameDisplay').textContent = userData.name || '--';
+      document.getElementById('userPhone').textContent = userData.phone || '--';
       document.getElementById('userEmail').textContent = userData.email;
       document.getElementById('userAddress').textContent = userData.address || 'Not set';
+      document.getElementById('currentService').textContent = SERVICE_LABELS[userData.service] || 'Not set';
       
-      // Calculate Poop Star days
       const created = new Date(userData.createdAt);
       const now = new Date();
       const days = Math.floor((now - created) / (1000 * 60 * 60 * 24));
       document.getElementById('starDays').textContent = days + ' Days';
       document.getElementById('starSince').textContent = 'Since ' + created.toLocaleDateString();
       
-      // Load service history
       const visitsQuery = query(
         collection(db, 'visits'),
         where('clientId', '==', uid),
@@ -258,13 +308,11 @@
       }
     }
 
-    // Logout
     window.logout = async () => {
       await signOut(auth);
       location.reload();
     };
 
-    // Check auth state
     onAuthStateChanged(auth, (user) => {
       if (user) {
         loadDashboard(user.uid);
