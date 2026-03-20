@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Big Turd Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .star-glow { box-shadow: 0 0 20px rgba(251, 191, 36, 0.5); }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-lime-50 to-green-50 min-h-screen">
+  <div id="app" class="container mx-auto px-4 py-8 max-w-md">
+    <!-- Login Form -->
+    <div id="loginView" class="bg-white rounded-2xl shadow-xl p-8">
+      <div class="text-center mb-8">
+        <div class="text-4xl mb-2">💩</div>
+        <h1 class="text-2xl font-bold text-stone-800">Big Turd Portal</h1>
+        <p class="text-stone-500 text-sm">Sign in to your account</p>
+      </div>
+      
+      <form id="loginForm" class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-stone-700 mb-1">Email</label>
+          <input type="email" id="loginEmail" required class="w-full px-4 py-3 rounded-xl border-2 border-stone-200 focus:border-lime-500 focus:outline-none">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-stone-700 mb-1">Password</label>
+          <input type="password" id="loginPassword" required class="w-full px-4 py-3 rounded-xl border-2 border-stone-200 focus:border-lime-500 focus:outline-none">
+        </div>
+        <button type="submit" class="w-full bg-lime-600 text-white font-bold py-3 rounded-xl hover:bg-lime-700 transition">
+          Sign In
+        </button>
+      </form>
+      
+      <div class="mt-6 text-center">
+        <p class="text-stone-500 text-sm">Don't have an account?</p>
+        <button onclick="showSignup()" class="text-lime-600 font-semibold hover:underline">Create Account</button>
+      </div>
+      
+      <div class="mt-4 text-center">
+        <a href="index.html" class="text-stone-400 text-sm hover:text-stone-600">← Back to Website</a>
+      </div>
+    </div>
+
+    <!-- Signup Form -->
+    <div id="signupView" class="bg-white rounded-2xl shadow-xl p-8 hidden">
+      <div class="text-center mb-8">
+        <div class="text-4xl mb-2">💩</div>
+        <h1 class="text-2xl font-bold text-stone-800">Create Account</h1>
+        <p class="text-stone-500 text-sm">Sign up for your client portal</p>
+      </div>
+      
+      <form id="signupForm" class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-stone-700 mb-1">Full Name</label>
+          <input type="text" id="signupName" required class="w-full px-4 py-3 rounded-xl border-2 border-stone-200 focus:border-lime-500 focus:outline-none">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-stone-700 mb-1">Email</label>
+          <input type="email" id="signupEmail" required class="w-full px-4 py-3 rounded-xl border-2 border-stone-200 focus:border-lime-500 focus:outline-none">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-stone-700 mb-1">Password</label>
+          <input type="password" id="signupPassword" required minlength="6" class="w-full px-4 py-3 rounded-xl border-2 border-stone-200 focus:border-lime-500 focus:outline-none">
+          <p class="text-xs text-stone-400 mt-1">At least 6 characters</p>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-stone-700 mb-1">Service Address</label>
+          <input type="text" id="signupAddress" required class="w-full px-4 py-3 rounded-xl border-2 border-stone-200 focus:border-lime-500 focus:outline-none" placeholder="123 Main St, Terre Haute, IN">
+        </div>
+        <button type="submit" class="w-full bg-lime-600 text-white font-bold py-3 rounded-xl hover:bg-lime-700 transition">
+          Create Account
+        </button>
+      </form>
+      
+      <div class="mt-6 text-center">
+        <p class="text-stone-500 text-sm">Already have an account?</p>
+        <button onclick="showLogin()" class="text-lime-600 font-semibold hover:underline">Sign In</button>
+      </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="dashboardView" class="hidden">
+      <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold text-stone-800">Welcome, <span id="userName">User</span>!</h1>
+        <button onclick="logout()" class="text-stone-500 hover:text-stone-700">Logout</button>
+      </div>
+      
+      <!-- Poop Star Status -->
+      <div id="poopStarCard" class="bg-gradient-to-r from-amber-400 to-orange-500 rounded-2xl p-6 text-white mb-6 star-glow">
+        <div class="flex items-center gap-4">
+          <div class="text-5xl">⭐</div>
+          <div>
+            <div class="text-sm opacity-80">Poop Star Status</div>
+            <div class="text-3xl font-bold" id="starDays">0 Days</div>
+            <div class="text-sm opacity-80" id="starSince">Since...</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Quick Stats -->
+      <div class="grid grid-cols-2 gap-4 mb-6">
+        <div class="bg-white rounded-xl p-4 shadow">
+          <div class="text-2xl font-bold text-lime-600" id="totalVisits">0</div>
+          <div class="text-sm text-stone-500">Total Visits</div>
+        </div>
+        <div class="bg-white rounded-xl p-4 shadow">
+          <div class="text-2xl font-bold text-lime-600" id="nextService">--</div>
+          <div class="text-sm text-stone-500">Next Service</div>
+        </div>
+      </div>
+      
+      <!-- Recent Visits -->
+      <div class="bg-white rounded-xl p-6 shadow">
+        <h2 class="font-bold text-lg mb-4">Recent Service History</h2>
+        <div id="serviceHistory" class="space-y-3">
+          <p class="text-stone-400 text-sm">No service history yet.</p>
+        </div>
+      </div>
+      
+      <!-- Account Info -->
+      <div class="mt-6 bg-white rounded-xl p-6 shadow">
+        <h2 class="font-bold text-lg mb-4">Account Info</h2>
+        <div class="space-y-2 text-sm">
+          <div class="flex justify-between">
+            <span class="text-stone-500">Email:</span>
+            <span id="userEmail" class="font-medium"></span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-stone-500">Address:</span>
+            <span id="userAddress" class="font-medium"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+    import { getFirestore, doc, setDoc, getDoc, collection, query, where, orderBy, limit, getDocs, addDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+
+    // Firebase config - REPLACE WITH YOUR CONFIG
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // Make functions available globally
+    window.firebaseAuth = { auth, db };
+    window.showSignup = () => {
+      document.getElementById('loginView').classList.add('hidden');
+      document.getElementById('signupView').classList.remove('hidden');
+    };
+    window.showLogin = () => {
+      document.getElementById('signupView').classList.add('hidden');
+      document.getElementById('loginView').classList.remove('hidden');
+    };
+
+    // Login
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+      
+      try {
+        const userCred = await signInWithEmailAndPassword(auth, email, password);
+        loadDashboard(userCred.user.uid);
+      } catch (err) {
+        alert('Login failed: ' + err.message);
+      }
+    });
+
+    // Signup
+    document.getElementById('signupForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('signupName').value;
+      const email = document.getElementById('signupEmail').value;
+      const password = document.getElementById('signupPassword').value;
+      const address = document.getElementById('signupAddress').value;
+      
+      try {
+        const userCred = await createUserWithEmailAndPassword(auth, email, password);
+        
+        // Create user profile in Firestore
+        await setDoc(doc(db, 'clients', userCred.user.uid), {
+          name,
+          email,
+          address,
+          createdAt: new Date().toISOString(),
+          starLevel: 1
+        });
+        
+        loadDashboard(userCred.user.uid);
+      } catch (err) {
+        alert('Signup failed: ' + err.message);
+      }
+    });
+
+    // Load Dashboard
+    async function loadDashboard(uid) {
+      document.getElementById('loginView').classList.add('hidden');
+      document.getElementById('signupView').classList.add('hidden');
+      document.getElementById('dashboardView').classList.remove('hidden');
+      
+      const userDoc = await getDoc(doc(db, 'clients', uid));
+      const userData = userDoc.data();
+      
+      document.getElementById('userName').textContent = userData.name;
+      document.getElementById('userEmail').textContent = userData.email;
+      document.getElementById('userAddress').textContent = userData.address || 'Not set';
+      
+      // Calculate Poop Star days
+      const created = new Date(userData.createdAt);
+      const now = new Date();
+      const days = Math.floor((now - created) / (1000 * 60 * 60 * 24));
+      document.getElementById('starDays').textContent = days + ' Days';
+      document.getElementById('starSince').textContent = 'Since ' + created.toLocaleDateString();
+      
+      // Load service history
+      const visitsQuery = query(
+        collection(db, 'visits'),
+        where('clientId', '==', uid),
+        orderBy('date', 'desc'),
+        limit(10)
+      );
+      const visitsSnap = await getDocs(visitsQuery);
+      const visits = visitsSnap.docs.map(d => d.data());
+      
+      document.getElementById('totalVisits').textContent = visits.length;
+      
+      const historyEl = document.getElementById('serviceHistory');
+      if (visits.length === 0) {
+        historyEl.innerHTML = '<p class="text-stone-400 text-sm">No service history yet.</p>';
+      } else {
+        historyEl.innerHTML = visits.map(v => `
+          <div class="flex justify-between items-center p-3 bg-stone-50 rounded-lg">
+            <div>
+              <div class="font-medium">${new Date(v.date).toLocaleDateString()}</div>
+              <div class="text-xs text-stone-500">${v.arriveTime || '--'} - ${v.leaveTime || '--'}</div>
+            </div>
+            <div class="text-lime-600">✓</div>
+          </div>
+        `).join('');
+      }
+    }
+
+    // Logout
+    window.logout = async () => {
+      await signOut(auth);
+      location.reload();
+    };
+
+    // Check auth state
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        loadDashboard(user.uid);
+      }
+    });
+  </script>
+</body>
+</html>

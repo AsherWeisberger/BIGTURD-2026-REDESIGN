@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Big Turd Admin - Client Management</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+  </style>
+</head>
+<body class="bg-stone-100 min-h-screen">
+  <div class="container mx-auto px-4 py-8 max-w-4xl">
+    <div class="flex justify-between items-center mb-8">
+      <div>
+        <h1 class="text-2xl font-bold text-stone-800">🐕 Big Turd Admin</h1>
+        <p class="text-stone-500">Manage your clients</p>
+      </div>
+      <a href="index.html" class="text-lime-600 hover:underline">← Back to Website</a>
+    </div>
+
+    <!-- Add New Client -->
+    <div class="bg-white rounded-xl shadow p-6 mb-6">
+      <h2 class="font-bold text-lg mb-4">➕ Add New Client</h2>
+      <form id="addClientForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-stone-700 mb-1">Name</label>
+          <input type="text" id="newName" required class="w-full px-3 py-2 rounded-lg border border-stone-300 focus:border-lime-500 focus:outline-none">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-stone-700 mb-1">Email</label>
+          <input type="email" id="newEmail" required class="w-full px-3 py-2 rounded-lg border border-stone-300 focus:border-lime-500 focus:outline-none">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-stone-700 mb-1">Password (for client)</label>
+          <input type="text" id="newPassword" required class="w-full px-3 py-2 rounded-lg border border-stone-300 focus:border-lime-500 focus:outline-none" placeholder="Temp password">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-stone-700 mb-1">Address</label>
+          <input type="text" id="newAddress" required class="w-full px-3 py-2 rounded-lg border border-stone-300 focus:border-lime-500 focus:outline-none">
+        </div>
+        <div class="md:col-span-2">
+          <button type="submit" class="w-full bg-lime-600 text-white font-bold py-3 rounded-lg hover:bg-lime-700 transition">
+            Create Client Account
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Client List -->
+    <div class="bg-white rounded-xl shadow p-6">
+      <h2 class="font-bold text-lg mb-4">👥 Clients (<span id="clientCount">0</span>)</h2>
+      <div id="clientList" class="space-y-4">
+        <p class="text-stone-400">Loading clients...</p>
+      </div>
+    </div>
+
+    <!-- Log Visit Modal -->
+    <div id="visitModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
+      <div class="bg-white rounded-2xl p-6 max-w-md w-full mx-4">
+        <h3 class="font-bold text-xl mb-4">📝 Log Service Visit</h3>
+        <p class="text-stone-500 mb-4" id="modalClientName">Client Name</p>
+        
+        <form id="logVisitForm" class="space-y-4">
+          <input type="hidden" id="modalClientId">
+          <div>
+            <label class="block text-sm font-medium text-stone-700 mb-1">Date</label>
+            <input type="date" id="visitDate" required class="w-full px-3 py-2 rounded-lg border border-stone-300 focus:border-lime-500 focus:outline-none">
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-stone-700 mb-1">Arrival Time</label>
+              <input type="time" id="arriveTime" class="w-full px-3 py-2 rounded-lg border border-stone-300 focus:border-lime-500 focus:outline-none">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-stone-700 mb-1">Departure Time</label>
+              <input type="time" id="leaveTime" class="w-full px-3 py-2 rounded-lg border border-stone-300 focus:border-lime-500 focus:outline-none">
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-stone-700 mb-1">Notes</label>
+            <textarea id="visitNotes" rows="2" class="w-full px-3 py-2 rounded-lg border border-stone-300 focus:border-lime-500 focus:outline-none" placeholder="Any observations..."></textarea>
+          </div>
+          <div class="flex gap-3">
+            <button type="button" onclick="closeModal()" class="flex-1 py-3 rounded-lg border border-stone-300 text-stone-600 hover:bg-stone-50">Cancel</button>
+            <button type="submit" class="flex-1 bg-lime-600 text-white font-bold py-3 rounded-lg hover:bg-lime-700">Save Visit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+    import { getFirestore, collection, doc, setDoc, getDocs, addDoc, query, orderBy, getDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+
+    // Firebase config - REPLACE WITH YOUR CONFIG
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // Admin credentials (YOU'LL LOG IN WITH THESE)
+    const ADMIN_EMAIL = 'admin@bigturd.com';
+    const ADMIN_PASSWORD = 'YourAdminPassword123!';
+
+    let clients = [];
+
+    // Initialize - sign in as admin
+    async function init() {
+      try {
+        await signInWithEmailAndPassword(auth, ADMIN_EMAIL, ADMIN_PASSWORD);
+        loadClients();
+      } catch (err) {
+        console.error('Admin login failed:', err);
+        document.getElementById('clientList').innerHTML = '<p class="text-red-500">Admin login failed. Check console for details.</p>';
+      }
+    }
+
+    // Load all clients
+    async function loadClients() {
+      const querySnapshot = await getDocs(collection(db, 'clients'));
+      clients = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      
+      document.getElementById('clientCount').textContent = clients.length;
+      
+      const listEl = document.getElementById('clientList');
+      if (clients.length === 0) {
+        listEl.innerHTML = '<p class="text-stone-400">No clients yet.</p>';
+        return;
+      }
+
+      listEl.innerHTML = await Promise.all(clients.map(async (client) => {
+        // Get visit count
+        const visitsQuery = query(collection(db, 'visits'), where('clientId', '==', client.id));
+        const visitsSnap = await getDocs(visitsQuery);
+        const visitCount = visitsSnap.size;
+        
+        // Get days since signup
+        const created = new Date(client.createdAt);
+        const now = new Date();
+        const days = Math.floor((now - created) / (1000 * 60 * 60 * 24));
+        
+        return `
+          <div class="border border-stone-200 rounded-lg p-4">
+            <div class="flex justify-between items-start">
+              <div>
+                <div class="font-bold text-lg">${client.name}</div>
+                <div class="text-sm text-stone-500">${client.email}</div>
+                <div class="text-sm text-stone-500">${client.address || 'No address'}</div>
+                <div class="flex gap-4 mt-2 text-xs">
+                  <span class="bg-amber-100 text-amber-700 px-2 py-1 rounded">⭐ ${days} days</span>
+                  <span class="bg-lime-100 text-lime-700 px-2 py-1 rounded">${visitCount} visits</span>
+                </div>
+              </div>
+              <button onclick="openModal('${client.id}', '${client.name}')" class="bg-lime-600 text-white px-4 py-2 rounded-lg hover:bg-lime-700 text-sm">
+                Log Visit
+              </button>
+            </div>
+          </div>
+        `;
+      })).join('');
+    }
+
+    // Add new client
+    document.getElementById('addClientForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('newName').value;
+      const email = document.getElementById('newEmail').value;
+      const password = document.getElementById('newPassword').value;
+      const address = document.getElementById('newAddress').value;
+
+      try {
+        // Create auth user
+        const userCred = await createUserWithEmailAndPassword(auth, email, password);
+        
+        // Create client profile
+        await setDoc(doc(db, 'clients', userCred.user.uid), {
+          name,
+          email,
+          address,
+          createdAt: new Date().toISOString(),
+          starLevel: 1,
+          password // NOTE: In production, hash this or use Firebase Auth properly
+        });
+        
+        alert('Client created successfully!');
+        document.getElementById('addClientForm').reset();
+        loadClients();
+      } catch (err) {
+        alert('Error: ' + err.message);
+      }
+    });
+
+    // Modal functions
+    window.openModal = (clientId, clientName) => {
+      document.getElementById('modalClientId').value = clientId;
+      document.getElementById('modalClientName').textContent = clientName;
+      document.getElementById('visitDate').value = new Date().toISOString().split('T')[0];
+      document.getElementById('visitModal').classList.remove('hidden');
+      document.getElementById('visitModal').classList.add('flex');
+    };
+
+    window.closeModal = () => {
+      document.getElementById('visitModal').classList.add('hidden');
+      document.getElementById('visitModal').classList.remove('flex');
+    };
+
+    // Log visit
+    document.getElementById('logVisitForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const clientId = document.getElementById('modalClientId').value;
+      const date = document.getElementById('visitDate').value;
+      const arriveTime = document.getElementById('arriveTime').value;
+      const leaveTime = document.getElementById('leaveTime').value;
+      const notes = document.getElementById('visitNotes').value;
+
+      try {
+        await addDoc(collection(db, 'visits'), {
+          clientId,
+          date,
+          arriveTime,
+          leaveTime,
+          notes,
+          createdAt: new Date().toISOString()
+        });
+        
+        alert('Visit logged successfully!');
+        closeModal();
+        loadClients();
+      } catch (err) {
+        alert('Error: ' + err.message);
+      }
+    });
+
+    init();
+  </script>
+</body>
+</html>
