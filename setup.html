@@ -6,18 +6,15 @@
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-stone-100 min-h-screen flex items-center justify-center">
-  <div class="bg-white rounded-xl shadow p-8 max-w-md w-full">
-    <h1 class="text-2xl font-bold text-center mb-6">🐕 Big Turd Setup</h1>
-    <div id="status" class="text-center text-stone-600 mb-4">Loading...</div>
-    <button id="setupBtn" class="w-full bg-lime-600 text-white font-bold py-3 rounded-lg hover:bg-lime-700 hidden">
-      Create Admin Account
-    </button>
+  <div class="bg-white rounded-xl shadow p-8 max-w-md w-full text-center">
+    <h1 class="text-2xl font-bold mb-6">🐕 Big Turd Setup</h1>
+    <div id="status" class="text-lg mb-6">Setting up...</div>
   </div>
 
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
-    import { getFirestore, doc, setDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+    import { getFirestore, doc, setDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
     const firebaseConfig = {
       apiKey: "AIzaSyBaSETzAzXCDC_RHntmNKeM9nO4pcA6VRA",
@@ -35,54 +32,45 @@
     const ADMIN_EMAIL = 'bigturd@admin.com';
     const ADMIN_PASSWORD = 'BigTurd2026!';
 
-    async function runSetup() {
-      const btn = document.getElementById('setupBtn');
-      btn.disabled = true;
-      btn.textContent = 'Setting up...';
-      
-      try {
-        const userCred = await createUserWithEmailAndPassword(auth, ADMIN_EMAIL, ADMIN_PASSWORD);
-        
-        await setDoc(doc(db, 'clients', userCred.user.uid), {
-          name: 'Admin',
-          email: ADMIN_EMAIL,
-          address: 'Admin Account',
-          createdAt: new Date().toISOString(),
-          starLevel: 99,
-          isAdmin: true
-        });
-        
-        document.getElementById('status').innerHTML = '<span class="text-green-600">✅ Admin account created!</span>';
-        btn.textContent = 'Done!';
-        btn.classList.add('hidden');
-        
-        setTimeout(() => {
-          window.location.href = 'admin.html';
-        }, 1500);
-        
-      } catch (err) {
-        if (err.code === 'auth/email-already-in-use') {
-          try {
-            await signInWithEmailAndPassword(auth, ADMIN_EMAIL, ADMIN_PASSWORD);
-            document.getElementById('status').innerHTML = '<span class="text-green-600">✅ Admin account ready!</span>';
-            btn.textContent = 'Go to Admin Panel';
-            btn.onclick = () => window.location.href = 'admin.html';
-          } catch (loginErr) {
-            document.getElementById('status').innerHTML = '<span class="text-red-600">Error: ' + loginErr.message + '</span>';
-            btn.disabled = false;
-            btn.textContent = 'Try Again';
+    const status = document.getElementById('status');
+
+    // Check auth state
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        // Already logged in, go to admin
+        status.innerHTML = '✅ Logged in! <br>Redirecting to admin...';
+        setTimeout(() => window.location.href = 'admin.html', 1000);
+      } else {
+        // Try to sign in first
+        try {
+          await signInWithEmailAndPassword(auth, ADMIN_EMAIL, ADMIN_PASSWORD);
+          status.innerHTML = '✅ Logged in! <br>Redirecting to admin...';
+          setTimeout(() => window.location.href = 'admin.html', 1000);
+        } catch (err) {
+          if (err.code === 'auth/user-not-found') {
+            // Create admin
+            status.innerHTML = 'Creating admin account...';
+            try {
+              const userCred = await createUserWithEmailAndPassword(auth, ADMIN_EMAIL, ADMIN_PASSWORD);
+              await setDoc(doc(db, 'clients', userCred.user.uid), {
+                name: 'Admin',
+                email: ADMIN_EMAIL,
+                address: 'Admin Account',
+                createdAt: new Date().toISOString(),
+                starLevel: 99,
+                isAdmin: true
+              });
+              status.innerHTML = '✅ Admin created! <br>Redirecting...';
+              setTimeout(() => window.location.href = 'admin.html', 1500);
+            } catch (createErr) {
+              status.innerHTML = '<span class="text-red-600">Error: ' + createErr.message + '</span>';
+            }
+          } else {
+            status.innerHTML = '<span class="text-red-600">Error: ' + err.message + '</span>';
           }
-        } else {
-          document.getElementById('status').innerHTML = '<span class="text-red-600">Error: ' + err.message + '</span>';
-          btn.disabled = false;
-          btn.textContent = 'Try Again';
         }
       }
-    }
-
-    document.getElementById('status').textContent = 'Ready to setup admin account';
-    document.getElementById('setupBtn').classList.remove('hidden');
-    document.getElementById('setupBtn').onclick = runSetup;
+    });
   </script>
 </body>
 </html>
