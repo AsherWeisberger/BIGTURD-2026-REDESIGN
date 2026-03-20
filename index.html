@@ -8,6 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,600;0,700;0,800;1,800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <script id="tailwind-config">
  tailwind.config = {
  darkMode: "class",
@@ -80,7 +81,12 @@
  backdrop-filter: blur(12px);
  -webkit-backdrop-filter: blur(12px);
  }
- </style>
+ .calc-btn.selected {
+ background: #65a30d !important;
+ color: white !important;
+ border-color: #65a30d !important;
+ }
+</style>
 </head>
 <body class="bg-surface text-on-surface font-body selection:bg-primary-fixed-dim selection:text-on-primary-fixed">
 <!-- TopNavBar -->
@@ -97,7 +103,7 @@
 </div>
 <div class="flex items-center gap-4">
 <button class="hidden sm:block text-stone-600 dark:text-stone-400 hover:text-lime-700 font-headline font-semibold px-4 py-2 transition-all Active:scale-95">Login</button>
-<button class="bg-primary-container text-on-primary-container px-6 py-2.5 rounded-xl font-headline font-semibold shadow-sm hover:brightness-110 transition-all Active:scale-95">Get Started</button>
+<a href="pricing.html" class="bg-primary-container text-on-primary-container px-6 py-2.5 rounded-xl font-headline font-semibold shadow-sm hover:brightness-110 transition-all Active:scale-95">Get Started</a>
 </div>
 </div>
 </nav>
@@ -114,8 +120,8 @@
  We don't just scoop. We restore your yard to its original glory with high-tech routes and medical-grade attention to detail.
  </p>
 <div class="flex flex-col sm:flex-row gap-4">
-<button class="bg-primary text-on-primary px-8 py-4 rounded-xl font-headline font-bold text-lg shadow-[0_4px_0_0_rgba(63,106,0,0.3)] hover:translate-y-[-2px] transition-all">Schedule First Cleaning</button>
-<button class="bg-surface-container-high text-on-surface px-8 py-4 rounded-xl font-headline font-bold text-lg hover:bg-surface-dim transition-all">See Pricing</button>
+<a href="pricing.html" class="bg-primary text-on-primary px-8 py-4 rounded-xl font-headline font-bold text-lg shadow-[0_4px_0_0_rgba(63,106,0,0.3)] hover:translate-y-[-2px] transition-all text-center">Schedule First Cleaning</a>
+<a href="pricing.html" class="bg-surface-container-high text-on-surface px-8 py-4 rounded-xl font-headline font-bold text-lg hover:bg-surface-dim transition-all text-center">See Pricing</a>
 </div>
 </div>
 <div class="relative">
@@ -131,54 +137,88 @@
 </div>
 </div>
 </section>
-<!-- Poop Calculator (Signature Component) -->
+
+<!-- THE MESS METER CALCULATOR -->
 <section class="bg-surface-container-low py-24">
 <div class="max-w-4xl mx-auto px-8">
-<div class="text-center mb-16">
-<h2 class="text-4xl font-headline font-extrabold tracking-tight mb-4">The Mess Meter</h2>
-<p class="text-secondary font-body">Calculate your weekly waste accumulation in seconds.</p>
+<div class="text-center mb-12">
+<h2 class="text-4xl font-headline font-extrabold tracking-tight mb-4">💩 The Mess Meter</h2>
+<p class="text-secondary font-body">See how much poop is piling up in YOUR yard. Then we'll help you solve it.</p>
 </div>
+
 <div class="bg-surface-container-lowest rounded-[2rem] p-8 md:p-12 shadow-sm border border-outline-variant/10">
-<div class="grid md:grid-cols-2 gap-12 items-center">
+<div class="grid md:grid-cols-2 gap-12">
+<!-- Input Side -->
 <div class="space-y-8">
+<!-- Dog Count -->
 <div>
 <label class="block font-headline font-bold mb-4 text-on-surface">How many dogs?</label>
-<div class="flex gap-4">
-<button class="w-12 h-12 rounded-xl bg-primary-container text-on-primary-container font-bold">1</button>
-<button class="w-12 h-12 rounded-xl bg-surface-container-highest text-secondary font-bold hover:bg-primary-container/20">2</button>
-<button class="w-12 h-12 rounded-xl bg-surface-container-highest text-secondary font-bold hover:bg-primary-container/20">3+</button>
+<div class="flex items-center gap-4">
+<button class="w-12 h-12 rounded-xl bg-surface-container-highest flex items-center justify-center font-bold text-xl hover:bg-primary hover:text-white transition-all" onclick="adjustMessDogs(-1)">−</button>
+<div class="text-center">
+<div class="text-3xl font-black text-primary" id="messDogCount">1</div>
+<div class="text-secondary text-sm" id="messDogEmojis">🐕</div>
+</div>
+<button class="w-12 h-12 rounded-xl bg-primary flex items-center justify-center font-bold text-xl text-white hover:bg-primary-container transition-all" onclick="adjustMessDogs(1)">+</button>
 </div>
 </div>
+
+<!-- Dog Size -->
 <div>
-<label class="block font-headline font-bold mb-4 text-on-surface">Dog size profile</label>
-<select class="w-full bg-surface-container-highest border-none rounded-xl py-4 px-6 font-body focus:ring-2 focus:ring-primary">
-<option>Small (Under 20 lbs)</option>
-<option selected="">Medium (20 - 50 lbs)</option>
-<option>Large (50+ lbs)</option>
-<option>Giant (100+ lbs)</option>
-</select>
+<label class="block font-headline font-bold mb-4 text-on-surface">Dog size</label>
+<div class="grid grid-cols-2 gap-2">
+<button class="calc-btn size-btn selected py-3 px-2 rounded-lg border-2 border-outline-variant font-semibold text-sm transition-all" data-size="small" onclick="selectMessSize(this, 'small')">🐕 Small<br><span class="text-xs opacity-70">&lt;20 lbs</span></button>
+<button class="calc-btn size-btn py-3 px-2 rounded-lg border-2 border-outline-variant font-semibold text-sm transition-all" data-size="medium" onclick="selectMessSize(this, 'medium')">🐕🐕 Medium<br><span class="text-xs opacity-70">20-60 lbs</span></button>
+<button class="calc-btn size-btn py-3 px-2 rounded-lg border-2 border-outline-variant font-semibold text-sm transition-all" data-size="large" onclick="selectMessSize(this, 'large')">🐕🐕🐕 Large<br><span class="text-xs opacity-70">60-100 lbs</span></button>
+<button class="calc-btn size-btn py-3 px-2 rounded-lg border-2 border-outline-variant font-semibold text-sm transition-all" data-size="xlarge" onclick="selectMessSize(this, 'xlarge')">🐕🐕🐕🐕 Giant<br><span class="text-xs opacity-70">100+ lbs</span></button>
 </div>
+</div>
+
+<!-- Current Cleaning Frequency -->
 <div>
-<label class="block font-headline font-bold mb-4 text-on-surface">Frequency of cleaning</label>
-<input class="w-full accent-primary" max="3" min="1" step="1" type="range"/>
-<div class="flex justify-between mt-2 text-xs font-label text-secondary font-semibold uppercase tracking-wider">
-<span>Weekly</span>
-<span>Bi-Weekly</span>
-<span>Twice Weekly</span>
+<label class="block font-headline font-bold mb-4 text-on-surface">How often do you clean now?</label>
+<div class="grid grid-cols-3 gap-2">
+<button class="calc-btn freq-btn selected py-3 rounded-lg border-2 border-outline-variant font-semibold text-sm transition-all" data-freq="1" onclick="selectMessFreq(this, 1)">Weekly</button>
+<button class="calc-btn freq-btn py-3 rounded-lg border-2 border-outline-variant font-semibold text-sm transition-all" data-freq="2" onclick="selectMessFreq(this, 2)">Bi-Weekly</button>
+<button class="calc-btn freq-btn py-3 rounded-lg border-2 border-outline-variant font-semibold text-sm transition-all" data-freq="0.5" onclick="selectMessFreq(this, 0.5)">Rarely</button>
 </div>
 </div>
 </div>
+
+<!-- Results Side -->
 <div class="bg-on-secondary-container rounded-2xl p-8 text-white shadow-xl flex flex-col items-center justify-center text-center">
-<span class="material-symbols-outlined text-5xl text-primary-fixed mb-4" data-icon="pet_supplies">pet_supplies</span>
-<div class="text-sm font-label uppercase tracking-[0.2em] mb-2 opacity-70">Estimated Weekly Mess</div>
-<div class="text-6xl font-headline font-black mb-2">12.5 <span class="text-2xl font-normal opacity-60">lbs</span></div>
-<p class="text-sm opacity-80 leading-relaxed px-4">That's over 600 lbs of waste per year lurking in your lawn.</p>
-<button class="mt-8 w-full bg-primary-fixed text-on-primary-fixed py-4 rounded-xl font-headline font-extrabold hover:scale-105 transition-transform">Solve This Forever</button>
+<span class="material-symbols-outlined text-5xl text-primary-fixed mb-4">pet_supplies</span>
+<div class="text-sm font-label uppercase tracking-[0.2em] mb-2 opacity-70">Your Monthly Mess</div>
+<div class="text-6xl font-headline font-black mb-2" id="monthlyPoops">84</div>
+<div class="text-2xl font-normal opacity-60 mb-6">poops per month</div>
+
+<!-- Stats -->
+<div class="grid grid-cols-3 gap-4 w-full mb-6">
+<div class="bg-white/10 rounded-xl p-3 text-center">
+<div class="text-xl font-bold text-primary-fixed" id="poundsWaste">63</div>
+<div class="text-xs opacity-70">lbs waste</div>
+</div>
+<div class="bg-white/10 rounded-xl p-3 text-center">
+<div class="text-xl font-bold text-primary-fixed" id="bacteriaDisplay">1.9B</div>
+<div class="text-xs opacity-70">bacteria</div>
+</div>
+<div class="bg-white/10 rounded-xl p-3 text-center">
+<div class="text-xl font-bold text-primary-fixed" id="timeWasted">4.2</div>
+<div class="text-xs opacity-70">hours scooping</div>
+</div>
+</div>
+
+<p class="text-sm opacity-80 leading-relaxed mb-6" id="wasteMessage">That's nearly 1,000 lbs of waste per year lurking in your lawn!</p>
+
+<a href="pricing.html" class="mt-auto w-full bg-primary-fixed text-on-primary-fixed py-4 rounded-xl font-headline font-extrabold hover:scale-105 transition-transform text-center">
+Solve This Forever →
+</a>
 </div>
 </div>
 </div>
 </div>
 </section>
+
 <!-- How It Works (Bento Grid) -->
 <section class="py-24 bg-surface">
 <div class="max-w-7xl mx-auto px-8">
@@ -247,8 +287,8 @@
  Join over 2,400 happy dog families who never have to worry about where they step. No contracts, cancel anytime.
  </p>
 <div class="flex flex-col sm:flex-row gap-6 justify-center">
-<button class="bg-primary text-on-primary px-12 py-5 rounded-full font-headline font-extrabold text-xl shadow-lg hover:shadow-primary/20 transition-all scale-100 hover:scale-105">Get an Instant Quote</button>
-<button class="bg-surface-container-highest text-on-surface px-12 py-5 rounded-full font-headline font-extrabold text-xl hover:bg-surface-dim transition-all">View Service Map</button>
+<a href="pricing.html" class="bg-primary text-on-primary px-12 py-5 rounded-full font-headline font-extrabold text-xl shadow-lg hover:shadow-primary/20 transition-all scale-100 hover:scale-105 text-center">Get an Instant Quote</a>
+<a href="commercial.html" class="bg-surface-container-highest text-on-surface px-12 py-5 rounded-full font-headline font-extrabold text-xl hover:bg-surface-dim transition-all text-center">Commercial</a>
 </div>
 </div>
 <div class="absolute inset-0 bg-primary-container/5 -skew-y-3 origin-right"></div>
@@ -270,4 +310,67 @@
 </div>
 </div>
 </footer>
+
+<script>
+// Mess Meter Calculator
+const DOG_POOP_PER_DAY = { small: 1, medium: 2, large: 3, xlarge: 4 };
+const POOP_WEIGHT_LBS = { small: 0.25, medium: 0.5, large: 0.75, xlarge: 1.0 };
+
+let messDogs = 1;
+let messSize = 'small';
+let messFreq = 1;
+
+function adjustMessDogs(change) {
+  messDogs = Math.max(1, Math.min(8, messDogs + change));
+  document.getElementById('messDogCount').textContent = messDogs;
+  document.getElementById('messDogEmojis').textContent = '🐕'.repeat(Math.min(messDogs, 4));
+  updateMessMeter();
+}
+
+function selectMessSize(btn, size) {
+  document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  messSize = size;
+  updateMessMeter();
+}
+
+function selectMessFreq(btn, freq) {
+  document.querySelectorAll('.freq-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  messFreq = freq;
+  updateMessMeter();
+}
+
+function updateMessMeter() {
+  const dailyPoops = messDogs * DOG_POOP_PER_DAY[messSize];
+  const monthlyPoops = Math.round(dailyPoops * 30 * messFreq);
+  const pounds = (monthlyPoops * POOP_WEIGHT_LBS[messSize]).toFixed(0);
+  const bacteria = monthlyPoops * 23000000;
+  const hours = ((monthlyPoops * 2) / 60).toFixed(1);
+  
+  // Format bacteria
+  let bacteriaDisplay;
+  if (bacteria >= 1000000000) {
+    bacteriaDisplay = (bacteria / 1000000000).toFixed(1) + 'B';
+  } else if (bacteria >= 1000000) {
+    bacteriaDisplay = (bacteria / 1000000).toFixed(1) + 'M';
+  } else {
+    bacteriaDisplay = bacteria.toLocaleString();
+  }
+  
+  // Update display
+  document.getElementById('monthlyPoops').textContent = monthlyPoops;
+  document.getElementById('poundsWaste').textContent = pounds;
+  document.getElementById('bacteriaDisplay').textContent = bacteriaDisplay;
+  document.getElementById('timeWasted').textContent = hours;
+  
+  // Dynamic message
+  const yearly = (monthlyPoops * 12).toLocaleString();
+  document.getElementById('wasteMessage').textContent = 
+    `That's nearly ${yearly} lbs of waste per year lurking in your lawn!`;
+}
+
+// Initialize
+updateMessMeter();
+</script>
 </body></html>
