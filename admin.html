@@ -95,7 +95,7 @@
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
-    import { getFirestore, collection, doc, setDoc, getDocs, addDoc, query, orderBy, getDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+    import { getFirestore, collection, doc, setDoc, getDocs, addDoc, query, orderBy } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
     // Firebase config
     const firebaseConfig = {
@@ -130,8 +130,14 @@
 
     // Load all clients
     async function loadClients() {
-      const querySnapshot = await getDocs(collection(db, 'clients'));
-      clients = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      try {
+        const querySnapshot = await getDocs(collection(db, 'clients'));
+        clients = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      } catch (err) {
+        console.error('Error loading clients:', err);
+        document.getElementById('clientList').innerHTML = '<p class="text-red-500">Error: ' + err.message + '</p>';
+        return;
+      }
       
       document.getElementById('clientCount').textContent = clients.length;
       
@@ -141,12 +147,7 @@
         return;
       }
 
-      listEl.innerHTML = await Promise.all(clients.map(async (client) => {
-        // Get visit count
-        const visitsQuery = query(collection(db, 'visits'), where('clientId', '==', client.id));
-        const visitsSnap = await getDocs(visitsQuery);
-        const visitCount = visitsSnap.size;
-        
+      listEl.innerHTML = clients.map((client) => {
         // Get days since signup
         const created = new Date(client.createdAt);
         const now = new Date();
@@ -161,16 +162,15 @@
                 <div class="text-sm text-stone-500">${client.address || 'No address'}</div>
                 <div class="flex gap-4 mt-2 text-xs">
                   <span class="bg-amber-100 text-amber-700 px-2 py-1 rounded">⭐ ${days} days</span>
-                  <span class="bg-lime-100 text-lime-700 px-2 py-1 rounded">${visitCount} visits</span>
                 </div>
               </div>
-              <button onclick="openModal('${client.id}', '${client.name}')" class="bg-lime-600 text-white px-4 py-2 rounded-lg hover:bg-lime-700 text-sm">
+              <button onclick="openModal('${client.id}', '${client.name.replace(/'/g, "\\'")}')" class="bg-lime-600 text-white px-4 py-2 rounded-lg hover:bg-lime-700 text-sm">
                 Log Visit
               </button>
             </div>
           </div>
         `;
-      })).join('');
+      }).join('');
     }
 
     // Add new client
