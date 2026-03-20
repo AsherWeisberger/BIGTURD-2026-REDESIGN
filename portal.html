@@ -93,6 +93,16 @@
             <option value="onetime">One-Time Cleanup ($69-110)</option>
           </select>
         </div>
+        <div>
+          <label class="block text-sm font-medium text-stone-700 mb-1">Number of Dogs</label>
+          <select id="signupDogs" class="w-full px-4 py-3 rounded-xl border-2 border-stone-200 focus:border-lime-500 focus:outline-none">
+            <option value="1">1 Dog</option>
+            <option value="2">2 Dogs</option>
+            <option value="3">3 Dogs</option>
+            <option value="4">4 Dogs</option>
+            <option value="5">5+ Dogs</option>
+          </select>
+        </div>
         <button type="submit" class="w-full bg-lime-600 text-white font-bold py-3 rounded-xl hover:bg-lime-700 transition">
           Create Account
         </button>
@@ -131,10 +141,14 @@
       </div>
       
       <!-- Quick Stats -->
-      <div class="grid grid-cols-2 gap-4 mb-6">
+      <div class="grid grid-cols-3 gap-4 mb-6">
         <div class="bg-white rounded-xl p-4 shadow">
           <div class="text-2xl font-bold text-lime-600" id="totalVisits">0</div>
-          <div class="text-sm text-stone-500">Total Visits</div>
+          <div class="text-sm text-stone-500">Visits</div>
+        </div>
+        <div class="bg-white rounded-xl p-4 shadow">
+          <div class="text-2xl font-bold text-lime-600" id="dogCount">--</div>
+          <div class="text-sm text-stone-500">Dogs</div>
         </div>
         <div class="bg-white rounded-xl p-4 shadow">
           <div class="text-2xl font-bold text-lime-600" id="nextService">--</div>
@@ -240,6 +254,7 @@
       const password = document.getElementById('signupPassword').value;
       const address = document.getElementById('signupAddress').value;
       const service = document.getElementById('signupService').value;
+      const dogs = document.getElementById('signupDogs').value;
       
       try {
         const userCred = await createUserWithEmailAndPassword(auth, email, password);
@@ -250,6 +265,7 @@
           email,
           address,
           service,
+          dogs,
           createdAt: new Date().toISOString(),
           starLevel: 1
         });
@@ -274,6 +290,7 @@
       document.getElementById('userEmail').textContent = userData.email;
       document.getElementById('userAddress').textContent = userData.address || 'Not set';
       document.getElementById('currentService').textContent = SERVICE_LABELS[userData.service] || 'Not set';
+      document.getElementById('dogCount').textContent = userData.dogs ? userData.dogs + ' 🐕' : '--';
       
       const created = new Date(userData.createdAt);
       const now = new Date();
