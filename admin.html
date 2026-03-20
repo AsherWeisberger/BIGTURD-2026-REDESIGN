@@ -97,23 +97,23 @@
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
     import { getFirestore, collection, doc, setDoc, getDocs, addDoc, query, orderBy, getDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
-    // Firebase config - REPLACE WITH YOUR CONFIG
+    // Firebase config
     const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_PROJECT.firebaseapp.com",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_PROJECT.appspot.com",
-      messagingSenderId: "YOUR_SENDER_ID",
-      appId: "YOUR_APP_ID"
+      apiKey: "AIzaSyBaSETzAzXCDC_RHntmNKeM9nO4pcA6VRA",
+      authDomain: "unaligned-fc556.firebaseapp.com",
+      projectId: "unaligned-fc556",
+      storageBucket: "unaligned-fc556.firebasestorage.app",
+      messagingSenderId: "720311168962",
+      appId: "1:720311168962:web:18d9f60626671a6e13f05b"
     };
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // Admin credentials (YOU'LL LOG IN WITH THESE)
-    const ADMIN_EMAIL = 'admin@bigturd.com';
-    const ADMIN_PASSWORD = 'YourAdminPassword123!';
+    // Admin credentials - CHANGE THESE
+    const ADMIN_EMAIL = 'bigturd@admin.com';
+    const ADMIN_PASSWORD = 'BigTurd2026!';
 
     let clients = [];
 
