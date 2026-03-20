@@ -111,6 +111,55 @@
         </form>
       </div>
     </div>
+
+    <!-- Edit Client Modal -->
+    <div id="editModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
+      <div class="bg-white rounded-2xl p-6 max-w-md w-full mx-4">
+        <h3 class="font-bold text-xl mb-4">✏️ Edit Client</h3>
+        
+        <form id="editClientForm" class="space-y-4">
+          <input type="hidden" id="editClientId">
+          <div>
+            <label class="block text-sm font-medium text-stone-700 mb-1">Name</label>
+            <input type="text" id="editName" class="w-full px-3 py-2 rounded-lg border border-stone-300 focus:border-lime-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-stone-700 mb-1">Phone</label>
+            <input type="tel" id="editPhone" class="w-full px-3 py-2 rounded-lg border border-stone-300 focus:border-lime-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-stone-700 mb-1">Email</label>
+            <input type="email" id="editEmail" class="w-full px-3 py-2 rounded-lg border border-stone-300 focus:border-lime-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-stone-700 mb-1">Address</label>
+            <input type="text" id="editAddress" class="w-full px-3 py-2 rounded-lg border border-stone-300 focus:border-lime-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-stone-700 mb-1">Service Plan</label>
+            <select id="editService" class="w-full px-3 py-2 rounded-lg border border-stone-300 focus:border-lime-500 focus:outline-none">
+              <option value="weekly-small">Weekly - Small Yard ($65/visit)</option>
+              <option value="weekly-medium">Weekly - Medium Yard ($75/visit)</option>
+              <option value="weekly-large">Weekly - Large Yard ($85/visit)</option>
+              <option value="weekly-xlarge">Weekly - X-Large Yard ($100/visit)</option>
+              <option value="twice-small">Twice Weekly - Small Yard ($110/visit)</option>
+              <option value="twice-medium">Twice Weekly - Medium Yard ($120/visit)</option>
+              <option value="twice-large">Twice Weekly - Large Yard ($135/visit)</option>
+              <option value="twice-xlarge">Twice Weekly - X-Large Yard ($145/visit)</option>
+              <option value="biweekly-small">Bi-Weekly - Small Yard ($45/visit)</option>
+              <option value="biweekly-medium">Bi-Weekly - Medium Yard ($50/visit)</option>
+              <option value="biweekly-large">Bi-Weekly - Large Yard ($60/visit)</option>
+              <option value="biweekly-xlarge">Bi-Weekly - X-Large Yard ($70/visit)</option>
+              <option value="onetime">One-Time Cleanup ($69-110)</option>
+            </select>
+          </div>
+          <div class="flex gap-3">
+            <button type="button" onclick="closeEditModal()" class="flex-1 py-3 rounded-lg border border-stone-300 text-stone-600 hover:bg-stone-50">Cancel</button>
+            <button type="submit" class="flex-1 bg-lime-600 text-white font-bold py-3 rounded-lg hover:bg-lime-700">Save Changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
 
   <!-- Firebase SDK -->
@@ -203,9 +252,14 @@
                   <span class="bg-lime-100 text-lime-700 px-2 py-1 rounded">${serviceLabels[client.service] || 'No service'}</span>
                 </div>
               </div>
-              <button onclick="openModal('${client.id}', '${client.name.replace(/'/g, "\\'")}')" class="bg-lime-600 text-white px-4 py-2 rounded-lg hover:bg-lime-700 text-sm">
-                Log Visit
-              </button>
+              <div class="flex flex-col gap-2">
+                <button onclick="openEditModal('${client.id}', ${JSON.stringify(client).replace(/'/g, "\\'")})" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm">
+                  Edit
+                </button>
+                <button onclick="openModal('${client.id}', '${client.name.replace(/'/g, "\\'")}')" class="bg-lime-600 text-white px-4 py-2 rounded-lg hover:bg-lime-700 text-sm">
+                  Log Visit
+                </button>
+              </div>
             </div>
           </div>
         `;
@@ -280,6 +334,46 @@
         
         alert('Visit logged successfully!');
         closeModal();
+        loadClients();
+      } catch (err) {
+        alert('Error: ' + err.message);
+      }
+    });
+
+    // Edit client functions
+    window.openEditModal = (clientId, client) => {
+      document.getElementById('editClientId').value = clientId;
+      document.getElementById('editName').value = client.name || '';
+      document.getElementById('editPhone').value = client.phone || '';
+      document.getElementById('editEmail').value = client.email || '';
+      document.getElementById('editAddress').value = client.address || '';
+      document.getElementById('editService').value = client.service || 'weekly-small';
+      document.getElementById('editModal').classList.remove('hidden');
+      document.getElementById('editModal').classList.add('flex');
+    };
+
+    window.closeEditModal = () => {
+      document.getElementById('editModal').classList.add('hidden');
+      document.getElementById('editModal').classList.remove('flex');
+    };
+
+    // Edit client form
+    document.getElementById('editClientForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const clientId = document.getElementById('editClientId').value;
+      
+      try {
+        await setDoc(doc(db, 'clients', clientId), {
+          name: document.getElementById('editName').value,
+          phone: document.getElementById('editPhone').value,
+          email: document.getElementById('editEmail').value,
+          address: document.getElementById('editAddress').value,
+          service: document.getElementById('editService').value,
+          updatedAt: new Date().toISOString()
+        }, { merge: true });
+        
+        alert('Client updated successfully!');
+        closeEditModal();
         loadClients();
       } catch (err) {
         alert('Error: ' + err.message);
