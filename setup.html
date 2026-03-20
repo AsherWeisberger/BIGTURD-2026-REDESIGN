@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Big Turd Setup</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-stone-100 min-h-screen flex items-center justify-center">
+  <div class="bg-white rounded-xl shadow p-8 max-w-md w-full">
+    <h1 class="text-2xl font-bold text-center mb-6">🐕 Big Turd Setup</h1>
+    <div id="status" class="text-center text-stone-600 mb-4">Loading...</div>
+    <button id="setupBtn" onclick="runSetup()" class="w-full bg-lime-600 text-white font-bold py-3 rounded-lg hover:bg-lime-700 hidden">
+      Create Admin Account
+    </button>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+    import { getFirestore, doc, setDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBaSETzAzXCDC_RHntmNKeM9nO4pcA6VRA",
+      authDomain: "unaligned-fc556.firebaseapp.com",
+      projectId: "unaligned-fc556",
+      storageBucket: "unaligned-fc556.firebasestorage.app",
+      messagingSenderId: "720311168962",
+      appId: "1:720311168962:web:18d9f60626671a6e13f05b"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const ADMIN_EMAIL = 'bigturd@admin.com';
+    const ADMIN_PASSWORD = 'BigTurd2026!';
+
+    async function runSetup() {
+      const btn = document.getElementById('setupBtn');
+      btn.disabled = true;
+      btn.textContent = 'Setting up...';
+      
+      try {
+        // Try to create the admin user
+        const userCred = await createUserWithEmailAndPassword(auth, ADMIN_EMAIL, ADMIN_PASSWORD);
+        
+        // Set admin profile
+        await setDoc(doc(db, 'clients', userCred.user.uid), {
+          name: 'Admin',
+          email: ADMIN_EMAIL,
+          address: 'Admin Account',
+          createdAt: new Date().toISOString(),
+          starLevel: 99,
+          isAdmin: true
+        });
+        
+        document.getElementById('status').innerHTML = '<span class="text-green-600">✅ Admin account created!</span>';
+        btn.textContent = 'Done!';
+        btn.classList.add('hidden');
+        
+        setTimeout(() => {
+          window.location.href = 'admin.html';
+        }, 1500);
+        
+      } catch (err) {
+        if (err.code === 'auth/email-already-in-use') {
+          // Already exists, try to sign in
+          try {
+            await signInWithEmailAndPassword(auth, ADMIN_EMAIL, ADMIN_PASSWORD);
+            document.getElementById('status').innerHTML = '<span class="text-green-600">✅ Admin account ready!</span>';
+            btn.textContent = 'Go to Admin Panel';
+            btn.classList.remove('hidden');
+            btn.onclick = () => window.location.href = 'admin.html';
+          } catch (loginErr) {
+            document.getElementById('status').innerHTML = '<span class="text-red-600">Error: ' + loginErr.message + '</span>';
+          }
+        } else {
+          document.getElementById('status').innerHTML = '<span class="text-red-600">Error: ' + err.message + '</span>';
+        }
+      }
+    }
+
+    // Check if admin exists
+    try {
+      // Just check status
+      document.getElementById('status').textContent = 'Ready to setup admin account';
+      document.getElementById('setupBtn').classList.remove('hidden');
+    } catch (err) {
+      document.getElementById('status').textContent = 'Error: ' + err.message;
+    }
+  </script>
+</body>
+</html>
