@@ -11,6 +11,8 @@
 <!-- Material Symbols -->
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <!-- Tailwind CSS -->
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <script id="tailwind-config">
@@ -87,7 +89,15 @@
  backdrop-filter: blur(20px);
  -webkit-backdrop-filter: blur(20px);
  }
- </style>
+ .calculator-btn.selected {
+ background: #65a30d !important;
+ color: white !important;
+ border-color: #65a30d !important;
+ }
+ .calculator-btn:hover:not(.selected) {
+ border-color: #65a30d !important;
+ }
+</style>
 </head>
 <body class="bg-surface text-on-surface selection:bg-primary-fixed selection:text-on-primary-fixed">
 <!-- TopNavBar -->
@@ -120,130 +130,183 @@
  Surgically clean yards for your family and pets. Choose the plan that fits your pack and enjoy a mess-free lifestyle.
  </p>
 </section>
-<!-- Pricing Cards Section -->
-<section class="max-w-7xl mx-auto px-8 grid grid-cols-1 md:grid-cols-3 gap-8 items-end">
-<!-- Basic Plan -->
-<div class="bg-surface-container-low rounded-xl p-8 transition-all hover:translate-y-[-4px]">
+
+<!-- Pricing Calculator -->
+<section class="max-w-4xl mx-auto px-8 mb-20">
+<div class="bg-surface-container rounded-3xl p-8 md:p-12">
+<h2 class="text-3xl md:text-4xl font-bold text-center mb-2">💩 Instant Price Calculator</h2>
+<p class="text-secondary text-center mb-10">Get your exact price in seconds. No hidden fees.</p>
+
+<!-- Service Frequency -->
 <div class="mb-8">
-<span class="text-xs font-bold tracking-widest uppercase text-secondary">Weekly Basic</span>
-<h3 class="text-2xl font-bold mt-2">Weekly Basic</h3>
-<div class="flex items-baseline mt-4">
-<span class="text-4xl font-black">$35</span>
-<span class="text-secondary ml-1 font-medium">/visit</span>
+<label class="block text-sm font-bold text-on-surface mb-3 uppercase tracking-wider">1. Service Frequency</label>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+<button class="calculator-btn service-btn selected py-4 px-3 rounded-xl border-2 border-outline-variant font-semibold transition-all" data-service="weekly" onclick="selectService(this, 'weekly')">
+<div class="text-lg mb-1">📅</div>
+<div>Weekly</div>
+</button>
+<button class="calculator-btn service-btn py-4 px-3 rounded-xl border-2 border-outline-variant font-semibold transition-all" data-service="twice" onclick="selectService(this, 'twice')">
+<div class="text-lg mb-1">⚡</div>
+<div>Twice Weekly</div>
+</button>
+<button class="calculator-btn service-btn py-4 px-3 rounded-xl border-2 border-outline-variant font-semibold transition-all" data-service="biweekly" onclick="selectService(this, 'biweekly')">
+<div class="text-lg mb-1">🗓️</div>
+<div>Bi-Weekly</div>
+</button>
+<button class="calculator-btn service-btn py-4 px-3 rounded-xl border-2 border-outline-variant font-semibold transition-all" data-service="onetime" onclick="selectService(this, 'onetime')">
+<div class="text-lg mb-1">🧹</div>
+<div>One-Time</div>
+</button>
 </div>
 </div>
-<ul class="space-y-4 mb-8">
-<li class="flex items-center gap-3">
-<span class="material-symbols-outlined text-primary-fixed-dim" style="font-variation-settings: 'FILL' 1;">check_circle</span>
-<span class="text-on-surface">Every 2 weeks</span>
-</li>
-<li class="flex items-center gap-3">
-<span class="material-symbols-outlined text-primary-fixed-dim" style="font-variation-settings: 'FILL' 1;">check_circle</span>
-<span class="text-on-surface">Deodorizing spray</span>
-</li>
-<li class="flex items-center gap-3">
-<span class="material-symbols-outlined text-primary-fixed-dim" style="font-variation-settings: 'FILL' 1;">check_circle</span>
-<span class="text-on-surface">Waste removal included</span>
-</li>
-</ul>
-<button class="w-full py-4 rounded-xl border-2 border-outline-variant text-on-surface font-bold hover:bg-surface-container transition-colors">Select Plan</button>
-</div>
-<!-- Popular Plan -->
-<div class="relative bg-surface-container-lowest rounded-xl p-10 shadow-[0_32px_64px_-12px_rgba(0,0,0,0.06)] ring-4 ring-primary-container/10">
-<div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-primary-container text-white px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest">Most Popular</div>
+
+<!-- Yard Size -->
 <div class="mb-8">
-<span class="text-xs font-bold tracking-widest uppercase text-primary">The Pristine Pro</span>
-<h3 class="text-3xl font-bold mt-2">The Pristine Pro</h3>
-<div class="flex items-baseline mt-4">
-<span class="text-5xl font-black">$45</span>
-<span class="text-secondary ml-1 font-medium">/visit</span>
+<label class="block text-sm font-bold text-on-surface mb-3 uppercase tracking-wider">2. Yard Size</label>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+<button class="calculator-btn yard-btn selected py-4 px-3 rounded-xl border-2 border-outline-variant font-semibold transition-all" data-yard="small" onclick="selectYard(this, 'small')">
+<div class="font-bold text-lg">Small</div>
+<div class="text-xs text-secondary">&lt;5,000 sq ft</div>
+</button>
+<button class="calculator-btn yard-btn py-4 px-3 rounded-xl border-2 border-outline-variant font-semibold transition-all" data-yard="medium" onclick="selectYard(this, 'medium')">
+<div class="font-bold text-lg">Medium</div>
+<div class="text-xs text-secondary">5k-10k sq ft</div>
+</button>
+<button class="calculator-btn yard-btn py-4 px-3 rounded-xl border-2 border-outline-variant font-semibold transition-all" data-yard="large" onclick="selectYard(this, 'large')">
+<div class="font-bold text-lg">Large</div>
+<div class="text-xs text-secondary">10k-20k sq ft</div>
+</button>
+<button class="calculator-btn yard-btn py-4 px-3 rounded-xl border-2 border-outline-variant font-semibold transition-all" data-yard="xlarge" onclick="selectYard(this, 'xlarge')">
+<div class="font-bold text-lg">X-Large</div>
+<div class="text-xs text-secondary">20k+ sq ft</div>
+</button>
 </div>
-<p class="text-sm text-secondary mt-2 italic">*Billed monthly at $180</p>
 </div>
-<ul class="space-y-4 mb-10">
-<li class="flex items-center gap-3">
-<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
-<span class="text-on-surface font-semibold">Weekly thorough cleaning</span>
-</li>
-<li class="flex items-center gap-3">
-<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
-<span class="text-on-surface">Sanitization treatment</span>
-</li>
-<li class="flex items-center gap-3">
-<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
-<span class="text-on-surface">Gate check safety report</span>
-</li>
-<li class="flex items-center gap-3">
-<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
-<span class="text-on-surface">Photo verification</span>
-</li>
-</ul>
-<button class="w-full py-4 rounded-xl bg-gradient-to-br from-primary to-primary-container text-white font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] transition-transform active:scale-95">Get Started Weekly</button>
+
+<!-- Number of Dogs -->
+<div class="mb-10">
+<label class="block text-sm font-bold text-on-surface mb-3 uppercase tracking-wider">3. Number of Dogs 🐕</label>
+<div class="flex items-center justify-center gap-6">
+<button class="w-12 h-12 rounded-full bg-surface-container-highest flex items-center justify-center font-bold text-xl hover:bg-primary hover:text-white transition-all" onclick="adjustDogs(-1)">−</button>
+<div class="text-center">
+<div class="text-4xl font-black text-primary" id="dogCount">1</div>
+<div class="text-secondary text-sm" id="dogEmojis">🐕</div>
 </div>
-<!-- Premium Plan -->
-<div class="bg-surface-container-low rounded-xl p-8 transition-all hover:translate-y-[-4px]">
-<div class="mb-8">
-<span class="text-xs font-bold tracking-widest uppercase text-secondary">Heavy Duty</span>
-<h3 class="text-2xl font-bold mt-2">Heavy Duty</h3>
-<div class="flex items-baseline mt-4">
+<button class="w-12 h-12 rounded-full bg-primary flex items-center justify-center font-bold text-xl text-white hover:bg-primary-container transition-all" onclick="adjustDogs(1)">+</button>
+</div>
+<div class="text-center mt-3 text-sm text-secondary">
+<span id="dogPriceLabel">Base price for 1 dog</span>
+</div>
+</div>
+
+<!-- Price Display -->
+<div class="bg-gradient-to-br from-stone-900 to-stone-700 rounded-2xl p-8 text-white text-center">
+<div class="text-sm text-stone-400 uppercase tracking-widest mb-2">Your Price</div>
+<div class="text-6xl md:text-7xl font-black text-primary-fixed mb-2" id="priceDisplay">$65</div>
+<div class="text-stone-400 mb-6" id="priceDetails">Weekly • Small Yard • 1 Dog</div>
+
+<!-- Breakdown -->
+<div class="bg-white/10 rounded-xl p-4 mb-6 text-left">
+<div class="flex justify-between mb-2 text-stone-300">
+<span>Base Service</span>
+<span id="basePrice">$65</span>
+</div>
+<div class="flex justify-between mb-2 text-stone-300" id="dogRow" style="display: none;">
+<span>Additional Dogs</span>
+<span id="dogFee">+$0</span>
+</div>
+<div class="flex justify-between pt-2 border-t border-white/20 font-bold">
+<span>Total</span>
+<span id="totalPrice">$65</span>
+</div>
+</div>
+
+<!-- Checkout Button -->
+<a id="checkoutBtn" href="https://buy.stripe.com/3cIcN54sP3eB2QV3mC6g80y" target="_blank" class="block w-full bg-primary-fixed text-on-primary-fixed font-bold py-4 rounded-xl hover:scale-[1.02] transition-transform">
+<i class="fas fa-lock mr-2"></i> Checkout Now
+</a>
+
+<!-- Custom Quote for 4+ dogs one-time -->
+<div id="customQuote" class="hidden bg-amber-100 border-2 border-amber-400 rounded-xl p-4 text-center">
+<div class="font-bold text-amber-800 mb-2">Custom Quote Required</div>
+<div class="text-amber-700 text-sm mb-3">4+ dogs requires a personalized quote.</div>
+<a href="tel:812-508-6399" class="inline-block bg-amber-600 text-white font-bold px-6 py-2 rounded-lg">
+<i class="fas fa-phone mr-2"></i> 812-508-6399
+</a>
+</div>
+</div>
+</div>
+</section>
+
+<!-- Simple Pricing Cards -->
+<section class="max-w-7xl mx-auto px-8 mb-20">
+<h2 class="text-3xl font-bold text-center mb-12">Simple Pricing Plans</h2>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<!-- Basic -->
+<div class="bg-surface-container-low rounded-xl p-8">
+<div class="mb-6">
+<h3 class="text-2xl font-bold">Basic</h3>
+<p class="text-secondary text-sm">Bi-weekly service for smaller yards</p>
+</div>
+<div class="mb-6">
+<div class="flex items-baseline">
 <span class="text-4xl font-black">$45</span>
-<span class="text-secondary ml-1 font-medium">/visit</span>
+<span class="text-secondary ml-2">/visit</span>
 </div>
-<p class="text-sm text-secondary mt-2 italic">*Twice-per-week service</p>
 </div>
-<ul class="space-y-4 mb-8">
-<li class="flex items-center gap-3">
-<span class="material-symbols-outlined text-primary-fixed-dim" style="font-variation-settings: 'FILL' 1;">check_circle</span>
-<span class="text-on-surface">2 visits per week</span>
-</li>
-<li class="flex items-center gap-3">
-<span class="material-symbols-outlined text-primary-fixed-dim" style="font-variation-settings: 'FILL' 1;">check_circle</span>
-<span class="text-on-surface">Premium enzymatic wash</span>
-</li>
-<li class="flex items-center gap-3">
-<span class="material-symbols-outlined text-primary-fixed-dim" style="font-variation-settings: 'FILL' 1;">check_circle</span>
-<span class="text-on-surface">Ideal for 3+ dog homes</span>
-</li>
+<ul class="space-y-3 mb-8 text-sm">
+<li class="flex items-center gap-3"><span class="text-primary">✓</span> Every 2 weeks</li>
+<li class="flex items-center gap-3"><span class="text-primary">✓</span> Deodorizing spray</li>
+<li class="flex items-center gap-3"><span class="text-primary">✓</span> Waste removal</li>
 </ul>
-<button class="w-full py-4 rounded-xl border-2 border-outline-variant text-on-surface font-bold hover:bg-surface-container transition-colors">Select Plan</button>
+<a href="https://buy.stripe.com/14A9AT3oL9CZdvzbT86g80H" target="_blank" class="block w-full py-3 text-center border-2 border-primary rounded-xl font-bold hover:bg-primary hover:text-white transition">Select</a>
+</div>
+
+<!-- Popular -->
+<div class="relative bg-surface-container-lowest rounded-xl p-10 shadow-xl ring-4 ring-primary-container/20">
+<div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-primary-container text-white px-4 py-1 rounded-full text-xs font-bold">MOST POPULAR</div>
+<div class="mb-6">
+<h3 class="text-2xl font-bold">Weekly</h3>
+<p class="text-secondary text-sm">Best for most families</p>
+</div>
+<div class="mb-6">
+<div class="flex items-baseline">
+<span class="text-4xl font-black">$65</span>
+<span class="text-secondary ml-2">/visit</span>
+</div>
+</div>
+<ul class="space-y-3 mb-8 text-sm">
+<li class="flex items-center gap-3"><span class="text-primary">✓</span> Weekly thorough cleaning</li>
+<li class="flex items-center gap-3"><span class="text-primary">✓</span> Sanitization treatment</li>
+<li class="flex items-center gap-3"><span class="text-primary">✓</span> Gate check report</li>
+<li class="flex items-center gap-3"><span class="text-primary">✓</span> Photo verification</li>
+</ul>
+<a href="https://buy.stripe.com/3cIcN54sP3eB2QV3mC6g80y" target="_blank" class="block w-full py-3 text-center bg-primary text-white rounded-xl font-bold hover:bg-primary-container transition">Get Started</a>
+</div>
+
+<!-- Premium -->
+<div class="bg-surface-container-low rounded-xl p-8">
+<div class="mb-6">
+<h3 class="text-2xl font-bold">Twice Weekly</h3>
+<p class="text-secondary text-sm">For larger yards or multiple dogs</p>
+</div>
+<div class="mb-6">
+<div class="flex items-baseline">
+<span class="text-4xl font-black">$110</span>
+<span class="text-secondary ml-2">/visit</span>
+</div>
+</div>
+<ul class="space-y-3 mb-8 text-sm">
+<li class="flex items-center gap-3"><span class="text-primary">✓</span> 2 visits per week</li>
+<li class="flex items-center gap-3"><span class="text-primary">✓</span> Premium enzymatic wash</li>
+<li class="flex items-center gap-3"><span class="text-primary">✓</span> Ideal for 3+ dog homes</li>
+<li class="flex items-center gap-3"><span class="text-primary">✓</span> Priority scheduling</li>
+</ul>
+<a href="https://buy.stripe.com/3cI00jcZl9CZezD9L06g80C" target="_blank" class="block w-full py-3 text-center border-2 border-primary rounded-xl font-bold hover:bg-primary hover:text-white transition">Select</a>
+</div>
 </div>
 </section>
-<!-- Poop Calculator (Custom Widget) -->
-<section class="max-w-7xl mx-auto px-8 mt-32">
-<div class="bg-surface-container rounded-3xl overflow-hidden flex flex-col lg:flex-row">
-<div class="p-12 lg:w-3/5">
-<h2 class="text-4xl font-bold mb-4">The Mess Calculator</h2>
-<p class="text-secondary mb-10 leading-relaxed">Tell us about your pack and we'll recommend the surgical precision your lawn needs.</p>
-<div class="grid grid-cols-1 sm:grid-cols-2 gap-8">
-<div>
-<label class="block text-sm font-bold text-on-surface mb-3 uppercase tracking-wider">Number of Dogs</label>
-<div class="flex gap-2">
-<button class="w-12 h-12 rounded-lg bg-surface-container-highest flex items-center justify-center font-bold text-on-surface hover:bg-primary hover:text-white transition-all">1</button>
-<button class="w-12 h-12 rounded-lg bg-primary flex items-center justify-center font-bold text-white transition-all">2</button>
-<button class="w-12 h-12 rounded-lg bg-surface-container-highest flex items-center justify-center font-bold text-on-surface hover:bg-primary hover:text-white transition-all">3</button>
-<button class="w-12 h-12 rounded-lg bg-surface-container-highest flex items-center justify-center font-bold text-on-surface hover:bg-primary hover:text-white transition-all">4+</button>
-</div>
-</div>
-<div>
-<label class="block text-sm font-bold text-on-surface mb-3 uppercase tracking-wider">Dog Size</label>
-<select class="w-full bg-surface-container-highest border-none rounded-xl py-3 px-4 focus:ring-2 focus:ring-primary">
-<option>Small (Under 20 lbs)</option>
-<option selected="">Medium (20-60 lbs)</option>
-<option>Large (60-100 lbs)</option>
-<option>Extra Large (100+ lbs)</option>
-</select>
-</div>
-</div>
-</div>
-<div class="lg:w-2/5 bg-on-secondary-container p-12 text-white flex flex-col justify-center">
-<span class="text-primary-fixed font-bold uppercase tracking-widest text-sm mb-2">Recommended Strategy</span>
-<h4 class="text-3xl font-bold mb-6">Weekly Deep Clean</h4>
-<p class="text-surface-variant mb-8 leading-relaxed">Based on your pack size, weekly service ensures no accumulation and maximum turf health.</p>
-<div class="text-4xl font-black text-primary-fixed mb-8">$180<span class="text-lg font-normal text-white/60 ml-1">/mo</span></div>
-<button class="bg-primary-fixed text-on-primary-fixed font-bold py-4 rounded-xl hover:scale-105 transition-transform active:scale-95">Lock in this Quote</button>
-</div>
-</div>
-</section>
+
 <!-- Custom Quote Section -->
 <section class="max-w-4xl mx-auto px-8 mt-32 text-center">
 <div class="inline-flex items-center gap-2 bg-tertiary-fixed text-on-tertiary-fixed px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-8">
@@ -277,4 +340,104 @@
 </div>
 </div>
 </footer>
+
+<script>
+// Pricing data from Stripe
+const PRICING = {
+  small: {
+    weekly:   { price: 65,  link: 'https://buy.stripe.com/3cIcN54sP3eB2QV3mC6g80y' },
+    twice:    { price: 110, link: 'https://buy.stripe.com/3cI00jcZl9CZezD9L06g80C' },
+    biweekly: { price: 45,  link: 'https://buy.stripe.com/14A9AT3oL9CZdvzbT86g80H' },
+    onetime:  { price: 69,  link: 'https://buy.stripe.com/7sY8wP8J5eXj2QVf5k6g80L' }
+  },
+  medium: {
+    weekly:   { price: 75,  link: 'https://buy.stripe.com/28E00jcZl6qNajnaP46g80z' },
+    twice:    { price: 120, link: 'https://buy.stripe.com/cNi7sL0cz5mJajn5uK6g80D' },
+    biweekly: { price: 50,  link: 'https://buy.stripe.com/00w9AT8J5dTfcrv0aq6g80I' },
+    onetime:  { price: 79,  link: 'https://buy.stripe.com/5kQdR9bVh7uR6378GW6g80M' }
+  },
+  large: {
+    weekly:   { price: 85,  link: 'https://buy.stripe.com/00waEX5wTdTf1MR6yO6g80A' },
+    twice:    { price: 135, link: 'https://buy.stripe.com/14AeVd7F1eXj3UZ9L06g80E' },
+    biweekly: { price: 60,  link: 'https://buy.stripe.com/dRmbJ1f7teXj77bg9o6g80J' },
+    onetime:  { price: 89,  link: 'https://buy.stripe.com/bJe6oH2kH4iF2QVaP46g80N' }
+  },
+  xlarge: {
+    weekly:   { price: 100, link: 'https://buy.stripe.com/6oU9ATf7tdTf8bf5uK6g80B' },
+    twice:    { price: 145, link: 'https://buy.stripe.com/9B66oH0czcPbbnr5uK6g80G' },
+    biweekly: { price: 70,  link: 'https://buy.stripe.com/bJe6oH8J53eBdvz3mC6g80K' },
+    onetime:  { price: 110, link: 'https://buy.stripe.com/28E4gz4sP7uR637f5k6g80O' }
+  }
+};
+
+const DOG_FEES = { 1: 0, 2: 7, 3: 14, 4: 21 };
+
+let currentService = 'weekly';
+let currentYard = 'small';
+let currentDogs = 1;
+
+function selectService(btn, service) {
+  document.querySelectorAll('.service-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  currentService = service;
+  updatePrice();
+}
+
+function selectYard(btn, yard) {
+  document.querySelectorAll('.yard-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  currentYard = yard;
+  updatePrice();
+}
+
+function adjustDogs(change) {
+  currentDogs = Math.max(1, Math.min(4, currentDogs + change));
+  document.getElementById('dogCount').textContent = currentDogs;
+  document.getElementById('dogEmojis').textContent = '🐕'.repeat(currentDogs);
+  updatePrice();
+}
+
+function updatePrice() {
+  const basePrice = PRICING[currentYard][currentService].price;
+  const dogFee = DOG_FEES[currentDogs];
+  const total = basePrice + dogFee;
+  
+  const serviceNames = { weekly: 'Weekly', twice: 'Twice Weekly', biweekly: 'Bi-Weekly', onetime: 'One-Time' };
+  const yardNames = { small: 'Small Yard', medium: 'Medium Yard', large: 'Large Yard', xlarge: 'X-Large' };
+  
+  // Check for custom quote
+  if (currentDogs === 4 && currentService === 'onetime') {
+    document.getElementById('checkoutBtn').style.display = 'none';
+    document.getElementById('customQuote').style.display = 'block';
+    document.getElementById('priceDisplay').textContent = 'Call Us';
+    document.getElementById('priceDetails').textContent = '4+ Dogs • One-Time • Custom quote';
+    document.getElementById('breakdown')?.style.setProperty('display', 'none');
+    return;
+  }
+  
+  document.getElementById('checkoutBtn').style.display = 'inline-flex';
+  document.getElementById('customQuote').style.display = 'none';
+  
+  document.getElementById('priceDisplay').textContent = '$' + total;
+  document.getElementById('priceDetails').textContent = `${serviceNames[currentService]} • ${yardNames[currentYard]} • ${currentDogs} Dog${currentDogs > 1 ? 's' : ''}`;
+  
+  document.getElementById('basePrice').textContent = '$' + basePrice;
+  
+  if (currentDogs > 1) {
+    document.getElementById('dogRow').style.display = 'flex';
+    document.getElementById('dogFee').textContent = '+$' + dogFee;
+  } else {
+    document.getElementById('dogRow').style.display = 'none';
+  }
+  
+  document.getElementById('totalPrice').textContent = '$' + total;
+  document.getElementById('dogPriceLabel').textContent = currentDogs > 1 ? `+$${dogFee} per additional dog` : 'Base price for 1 dog';
+  
+  // Update Stripe link
+  document.getElementById('checkoutBtn').href = PRICING[currentYard][currentService].link;
+}
+
+// Initialize
+updatePrice();
+</script>
 </body></html>
